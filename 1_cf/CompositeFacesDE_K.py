@@ -313,7 +313,7 @@ with codecs.open(output_file, 'wb', encoding="utf-8") as outfile:
     # exp start
     run_trials(items, trial_order)
 
-#Intro_CF_18.draw()
+# Intro_CF_18.draw()
 instructions[17].draw()
 exp_win.flip()
 event.waitKeys()

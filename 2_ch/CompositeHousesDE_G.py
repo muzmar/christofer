@@ -13,24 +13,42 @@ import random
 # global variables: INTERFACE
 #===============================================================================
 
-PATH = 'C:/Users/Christofer/Google Drive/HiWi-Job/PsychoPy/Composite/2_CH'
+# PATH = 'C:/Users/Christofer/Google Drive/HiWi-Job/PsychoPy/Composite/2_CH'
+PATH = "C:\\pythonProjects\\christofer\\2_ch"
 FIXCROSS_SIZE = 40 #size of the fixation cross (the character '+' in Arial)
 INSTR_CHAR_SIZE = 18 #character size for instructions
 OUTPATH = '%s/results/'%(PATH) #output path for storing the results
 AVAILABLE_KEYS = ['lctrl', 'rctrl', 'q']
-LANGUAGE = 'DE_G' #which language is the experiment in: 'DE_K'=German for smaller children; 'DE_G'=German for older children
+LANGUAGE = 'DE_G' # which language is the experiment in: 'DE_K'=German for smaller children; 'DE_G'=German for older children
 MATCHING = {'lctrl':'left', 'rctrl':'right'} #matching of buttons to answers
 SCREEN_SIZE = [1366, 768] #what is your screen resolution?
 LANG_FONT_MAP = {'DE_K':'Courier New', 'DE_G':'Courier New'} #what font is used for what language?
 
 
+class Image():  # class that creates ....
+
+    def __init__(self, name, **kwargs):
+
+        # ** if the format of images are different(ie. .png, .jpg, .gif) give the complete name with extension and
+        # remove the ".png" from self.path
+        # :param name: name of the image
+        # :param type: can be "load", "arrow", "questionMark", "questionLoad"
+        # :return:
+
+        self.path = '{0}/instructions/{1}/{2}.png'.format(PATH, LANGUAGE, name)
+        if 'loc' in kwargs:
+            self.loc = kwargs['loc']
+
+    def buffer(self, **kwargs):
+
+        buffer_image = visual.ImageStim(exp_win, image=self.path, units=u'pix')
+        if 'factor' in kwargs:
+            buffer_image.setSize(kwargs['factor'], '*')
+        return buffer_image
+
 #===============================================================================
 # prepare psychopy
 #===============================================================================
-
-#create a window
-exp_win = visual.Window(size=SCREEN_SIZE, monitor="testMonitor", color=(230,230,230), colorSpace='rgb255', units="deg")
-
 #gather experiment and subject information
 exp_name = 'CompositeHouses'
 exp_info = {'Subject':'', 'Subject (repeat)':''}
@@ -50,6 +68,9 @@ while exp_info['Subject'] != exp_info['Subject (repeat)']:
 exp_info['date'] = data.getDateStr()#add a simple timestamp
 exp_info['exp_name'] = exp_name
 
+#create a window
+exp_win = visual.Window(size=SCREEN_SIZE, monitor="testMonitor", color=(230,230,230), fullscr=True,
+                        colorSpace='rgb255', units="deg")
 
 #===============================================================================
 # read stimuli
@@ -99,19 +120,15 @@ cue_low = visual.SimpleImageStim(exp_win, image='%s/stimuli/cues/fingers_2.png'%
 
 #------------------------------------------------------------------------------
 #read instructions
-
+instructions = []
 try:
-    CH_2_01 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_01.png'%(PATH, LANGUAGE))
-    CH_2_02 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_02.png'%(PATH, LANGUAGE))
-    CH_2_03 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_03.png'%(PATH, LANGUAGE))
-    CH_2_04 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_04.png'%(PATH, LANGUAGE))
-    CH_2_05 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_05.png'%(PATH, LANGUAGE))
-    CH_2_06 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_06.png'%(PATH, LANGUAGE))
-    CH_2_07 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_07.png'%(PATH, LANGUAGE))
-    CH_2_08 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_08.png'%(PATH, LANGUAGE))
-    CH_2_09 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_09.png'%(PATH, LANGUAGE))
-    CH_2_10 = visual.SimpleImageStim(exp_win, image='%s/instructions/%s/CH_2_10.png'%(PATH, LANGUAGE))
-   
+    for i in range(11):
+        if i < 9:
+            num = "0" + str(i+1)
+        else:
+            num = str(i+1)
+        image_name = "CH_2_" + num
+        instructions.append(Image(image_name).buffer())
   
     with codecs.open('%s/Reminder.txt'%(PATH), 'rb', encoding='utf-8') as infile:
         rem_text = infile.read()
@@ -235,7 +252,20 @@ def run_trials(items, trial_order, practice = False):
                 exp_win.close()
                 core.quit()
 
+        # check for quit
+        if ans[-1] == "q":
+            core.quit()
+
+        # quarter messages
+        if not practice and trial_count in [20, 40, 60]:
+            break_image = visual.SimpleImageStim(exp_win, image='{0}/instructions/{1}/Break_0{2}.png'.
+                                                 format(PATH, LANGUAGE, trial_count/20))
+            break_image.draw()
+            exp_win.flip()
+            event.waitKeys(keyList=['space'])
+
         trial_count += 1
+
 
 
 #===============================================================================
@@ -244,34 +274,10 @@ def run_trials(items, trial_order, practice = False):
 
 #------------------------------------------------------------------------------
 # present instructions
-CH_2_01.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
-CH_2_02.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
-CH_2_03.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
-CH_2_04.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
-CH_2_05.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
-CH_2_06.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
-CH_2_07.draw()
-exp_win.flip()
-event.waitKeys(keyList=['space'])
-
+for ii in range(7):
+    instructions[ii].draw()
+    exp_win.flip()
+    event.waitKeys(keyList=['space'])
 
 #------------------------------------------------------------------------------
 # run experiment
@@ -281,7 +287,7 @@ with codecs.open(output_file, 'wb', encoding="utf-8") as outfile:
     #outfile.write('### Experiment: %s\n### Subject ID: %s\n### Date: %s\n\n' %(exp_info['exp_name'], exp_info['Subject'], exp_info['date']))
     outfile.write('subject_id;trial;trial_id;type;same_or_different;expected_answer;sex;cue;House_A:_Top_of_house;House_A:_Bottom_of_house;House_B:_Top_of_house;House_B:_Bottom_of_house;House_A_Original;House_B_Original;House_A_Name;House_B_Name;_;given_answer;correct;reaction_time\n')
     #practice start if no questions
-    CH_2_08.draw()
+    instructions[7].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])
 
@@ -289,19 +295,19 @@ with codecs.open(output_file, 'wb', encoding="utf-8") as outfile:
     run_trials(practice_items, practice_trial_order, practice=True)
 
     #practice end
-    CH_2_09.draw()
+    instructions[8].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])
 
     #exp start screen
-    CH_2_10.draw()
+    instructions[9].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])
 
     #exp start
     run_trials(items, trial_order)
 
-CH_2_11.draw()
+instructions[10].draw()
 exp_win.flip()
 event.waitKeys()
 

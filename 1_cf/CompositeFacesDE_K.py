@@ -172,9 +172,10 @@ def run_trials(items, trial_order, practice=False):
             core.quit()
 
         # quarter messages
-        if not practice and trial_count in [40, 80, 120]:
-            break_image = visual.SimpleImageStim(exp_win, image='{0}/instructions/{1}/Break_0{2}.png'.
-                                                 format(PATH, LANGUAGE, trial_count/40))
+        if (trial_count != len(trial_order)) and (not practice) and (trial_count % (len(trial_order)/4)) == 0:
+            break_image = visual.ImageStim(exp_win, image='{0}/instructions/{1}/Break_0{2}.png'.
+                                                 format(PATH, LANGUAGE, trial_count/(len(trial_order)/4)))
+            break_image.setSize(1.3333, '*')
             break_image.draw()
             exp_win.flip()
             event.waitKeys(keyList=['space'])
@@ -215,7 +216,6 @@ practice_items, practice_trial_order = read_stims('%s/stimuli/Practice_Composite
 
 items, trial_order = read_stims('%s/stimuli/Trials_CompositeFaces.txt'%(PATH))
 
-
 # ===============================================================================
 # Other preparations
 # ===============================================================================
@@ -236,7 +236,6 @@ cue_up = visual.SimpleImageStim(exp_win, image='{0}/stimuli/cues/fingers_1.png'.
 # cue lower half
 cue_low = visual.SimpleImageStim(exp_win, image='{0}/stimuli/cues/fingers_2.png'.format(PATH), pos=[0, -150],
                                  units=u'pix')
-
 
 # ------------------------------------------------------------------------------
 # read instructions
@@ -290,7 +289,7 @@ with codecs.open(output_file, 'wb', encoding="utf-8") as outfile:
     # outfile.write('### Experiment: %s\n### Subject ID: %s\n### Date: %s\n\n' %(exp_info['exp_name'], exp_info['Subject'], exp_info['date']))
     outfile.write('subject_id;trial;trial_id;type;same_or_different;expected_answer;sex;cue;Face_A:_Top_of_face;Face_A:_Bottom_of_face;Face_B:_Top_of_face;Face_B:_Bottom_of_face;Face_A_Original;Face_B_Original;Face_A_Name;Face_B_Name;_;given_answer;correct;reaction_time\n')
     # practice start if no questions
-    #Intro_CF_15.draw()
+    # Intro_CF_15.draw()
     instructions[14].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])
@@ -299,13 +298,13 @@ with codecs.open(output_file, 'wb', encoding="utf-8") as outfile:
     run_trials(practice_items, practice_trial_order, practice=True)
 
     # practice end
-    #Intro_CF_16.draw()
+    # Intro_CF_16.draw()
     instructions[15].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])
     
     # exp start screen
-    #Intro_CF_17.draw()
+    # Intro_CF_17.draw()
     instructions[16].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])

@@ -22,7 +22,7 @@ AVAILABLE_KEYS = ['lctrl', 'rctrl', 'q']
 LANGUAGE = 'DE_G' #which language is the experiment in: 'DE_K'=German for smaller children; 'DE_G'=German for older children
 MATCHING = {'lctrl':'left', 'rctrl':'right'} #matching of buttons to answers
 SCREEN_SIZE = [1366, 768] #what is your screen resolution?
-LANG_FONT_MAP = {'DE_K':'Courier New', 'DE_G':'Courier New'} #what font is used for what language?
+LANG_FONT_MAP = {'DE_K': 'Courier New', 'DE_G': 'Courier New'} #what font is used for what language?
 
 
 class Image():  # class that creates ....
@@ -73,7 +73,6 @@ exp_info['exp_name'] = exp_name
 exp_win = visual.Window(size=SCREEN_SIZE, monitor="testMonitor", color=(230,230,230), fullscr=True,
                         colorSpace='rgb255', units="deg")
 
-
 # ===============================================================================
 # read stimuli
 # ===============================================================================
@@ -105,20 +104,20 @@ items, trial_order = read_stims('%s/stimuli/Trials_CompositeFaces.txt'%(PATH))
 
 # width for text wrapping
 wrap_width = SCREEN_SIZE[0]-100
-font = LANG_FONT_MAP[LANGUAGE] #font based on language selection
+font = LANG_FONT_MAP[LANGUAGE]  # font based on language selection
 
 output_file = OUTPATH + exp_info['exp_name'] + '_' + LANGUAGE + '_%02i.txt'%(int(exp_info['Subject']))
-rt_clock = core.Clock() #reaction time clock
+rt_clock = core.Clock()  # reaction time clock
 
 # fixation cross
-fix_cross = visual.TextStim(exp_win, pos=[0, 0], text = '+', font='Arial', color=-1, height=FIXCROSS_SIZE, alignHoriz='center', units=u'pix')
+fix_cross = visual.TextStim(exp_win, pos=[0, 0], text = '+', font='Arial', color=-1,
+                            height=FIXCROSS_SIZE, alignHoriz='center', units=u'pix')
 
 # cue upper half
 cue_up = visual.SimpleImageStim(exp_win, image='%s/stimuli/cues/fingers_1.png'%(PATH),pos=[0,150], units=u'pix')
 
 # cue lower half
 cue_low = visual.SimpleImageStim(exp_win, image='%s/stimuli/cues/fingers_2.png'%(PATH),pos=[0,-150], units=u'pix')
-
 
 # ------------------------------------------------------------------------------
 # read instructions
@@ -165,14 +164,14 @@ def match_answer(answer_given, condition):
 
 def run_trials(items, trial_order, practice = False):
 
-    ### NOTE: If one wants a random order each time, uncomment the following two lines
-    #trial_order = range(len(items)) #NOTE: initial seed is system time, so it is different each time
-    #shuffle(trial_order)
+    # ## NOTE: If one wants a random order each time, uncomment the following two lines
+    # trial_order = range(len(items)) #NOTE: initial seed is system time, so it is different each time
+    # shuffle(trial_order)
 
-    #if practice:
-        #item_prefix = 'practice'
-    #else:
-        #item_prefix = ''
+    # if practice:
+        # item_prefix = 'practice'
+    # else:
+        # item_prefix = ''
 
     trial_count = 1
 
@@ -231,13 +230,13 @@ def run_trials(items, trial_order, practice = False):
 
         # get reaction time
         rt = rt_clock.getTime()
-        rt = rt*1000 #in ms
+        rt *= 1000  # in ms
 
         # write out answers
-        string_output = [exp_info['Subject'], str(trial_count)] #initialize output list: subject ID, trial number (in exp)
-        string_output.extend([str(x) for x in item]) #add trial infos
-        string_output.extend([str(int(practice)),str(ans[-1]), str(match_answer(ans[-1], item[3])), str(rt)]) #add answer infos
-        outfile.write(';'.join(string_output) + '\n') #write to file
+        string_output = [exp_info['Subject'], str(trial_count)] # initialize output list: subject ID, trial number (in exp)
+        string_output.extend([str(x) for x in item])  # add trial infos
+        string_output.extend([str(int(practice)),str(ans[-1]), str(match_answer(ans[-1], item[3])), str(rt)]) # add answer infos
+        outfile.write(';'.join(string_output) + '\n')  # write to file
 
         if practice and match_answer(ans[-1], item[3]):
             correct_screen.draw()
@@ -259,9 +258,10 @@ def run_trials(items, trial_order, practice = False):
             core.quit()
 
         # quarter messages
-        if not practice and trial_count in [40, 80, 120]:
-            break_image = visual.SimpleImageStim(exp_win,
-                image='{0}/instructions/{1}/Break_0{2}.png'.format(PATH, LANGUAGE, trial_count/40))
+        if (trial_count != len(trial_order)) and (not practice) and (trial_count % (len(trial_order)/4)) == 0:
+            break_image = visual.ImageStim(exp_win,
+                image='{0}/instructions/{1}/Break_0{2}.png'.format(PATH, LANGUAGE, trial_count/(len(trial_order)/4)))
+            break_image.setSize(1.3333, '*')
             break_image.draw()
             exp_win.flip()
             event.waitKeys(keyList=['space'])
@@ -271,15 +271,14 @@ def run_trials(items, trial_order, practice = False):
 # ===============================================================================
 # experiment
 # ===============================================================================
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # present instructions
 for ii in range(7):
     instructions[ii].draw()
     exp_win.flip()
     event.waitKeys(keyList=['space'])
 
-
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # run experiment
 with codecs.open(output_file, 'wb', encoding="utf-8") as outfile:
 

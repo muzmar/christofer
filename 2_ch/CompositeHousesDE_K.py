@@ -161,81 +161,79 @@ def match_answer(answer_given, condition):
 
 def run_trials(items, trial_order, practice = False):
 
-    ### NOTE: If one wants a random order each time, uncomment the following two lines
-    #trial_order = range(len(items)) #NOTE: initial seed is system time, so it is different each time
-    #shuffle(trial_order)
+    # ## NOTE: If one wants a random order each time, uncomment the following two lines
+    # trial_order = range(len(items)) #NOTE: initial seed is system time, so it is different each time
+    # shuffle(trial_order)
 
-    #if practice:
-        #item_prefix = 'practice'
-    #else:
-        #item_prefix = ''
-
+    # if practice:
+        # item_prefix = 'practice'
+    # else:
+        # item_prefix = ''
 
     trial_count = 1
 
-
-    #loop through trials
+    # loop through trials
     for i in trial_order:
 
         item = items[i-1]
         mask_index = random.randint(0,9)
               
-        #new stimuli
+        # new stimuli
         target = visual.ImageStim(exp_win, image='%s/stimuli/%s'%(PATH, item[12]), pos=[-0,0], units=u'pix')
         stim = visual.ImageStim(exp_win, image='%s/stimuli/%s'%(PATH, item[13]), pos=[0,0], units=u'pix')
 
-        #prepare mask
+        # prepare mask
         mask = visual.SimpleImageStim(exp_win, image='%s/stimuli/mask/Mask0%s.jpg'%(PATH, mask_index))
 
-        #prepare cue
+        # prepare cue
         if item[5] == 'upper':
             cue = cue_up
         else:
             cue = cue_low
 
-        #pre-stimulus interval
-        exp_win.flip() #flip blank screen
-        core.wait(0.5) #500 ms
+        # pre-stimulus interval
+        exp_win.flip()  # flip blank screen
+        core.wait(0.5)  # 500 ms
 
-        #fix_cross
+        # fix_cross
         fix_cross.draw()
         exp_win.flip()
-        core.wait(0.2) #200 ms
+        core.wait(0.2)  # 200 ms
 
-        #draw target
+        # draw target
         target.draw()
         exp_win.flip()
-        core.wait(1.6) #1600 ms
+        core.wait(1.6)  # 1600 ms
 
-        #mask (400 ms)
+        # mask (400 ms)
         mask.draw()
         cue.draw()
         exp_win.flip()
-        core.wait(0.4) #400 ms
+        core.wait(0.4)  # 400 ms
 
-        #blank (1 cycle)
+        # blank (1 cycle)
         exp_win.flip()
 
-        #draw to back buffer
+        # draw to back buffer
         stim.draw()
         cue.draw()
         reminder_screen.draw()
-        #present
+        # present
         exp_win.flip()
 
-        #start reaction time clock and collect answer
+        # start reaction time clock and collect answer
         rt_clock.reset()
         ans = event.waitKeys(keyList=AVAILABLE_KEYS)
 
-        #get reaction time
+        # get reaction time
         rt = rt_clock.getTime()
-        rt = rt*1000 #in ms
+        rt *= 1000  # in ms
 
-        #write out answers
-        string_output = [exp_info['Subject'], str(trial_count)] #initialize output list: subject ID, trial number (in exp)
-        string_output.extend([str(x) for x in item]) #add trial infos
-        string_output.extend([str(int(practice)),str(ans[-1]), str(match_answer(ans[-1], item[3])), str(rt)]) #add answer infos
-        outfile.write(';'.join(string_output) + '\n') #write to file
+        # write out answers
+        string_output = [exp_info['Subject'], str(trial_count)]  # initialize output list: subject ID, trial number (in exp)
+        string_output.extend([str(x) for x in item])  # add trial infos
+        string_output.extend([str(int(practice)),str(ans[-1]), str(match_answer(ans[-1], item[3])), str(rt)])  # add answer infos
+        outfile.write(';'.join(string_output) + '\n')  # write to file
 
         if practice and match_answer(ans[-1], item[3]):
             correct_screen.draw()
@@ -246,7 +244,7 @@ def run_trials(items, trial_order, practice = False):
             exp_win.flip()
             core.wait(1)
 
-        #check if experiment was aborted
+        # check if experiment was aborted
         if len(ans) == 2:
             if ans[-2] == 'lctrl' and ans[-1] == 'q':
                 exp_win.close()
@@ -257,9 +255,10 @@ def run_trials(items, trial_order, practice = False):
             core.quit()
 
         # quarter messages
-        if not practice and trial_count in [20, 40, 60]:
-            break_image = visual.SimpleImageStim(exp_win, image='{0}/instructions/{1}/Break_0{2}.png'.
-                                                 format(PATH, LANGUAGE, trial_count/20))
+        if (trial_count != len(trial_order)) and (not practice) and (trial_count % (len(trial_order)/4)) == 0:
+            break_image = visual.ImageStim(exp_win, image='{0}/instructions/{1}/Break_0{2}.png'.
+                                                 format(PATH, LANGUAGE, trial_count/(len(trial_order)/4)))
+            break_image.setSize(1.3333, '*')
             break_image.draw()
             exp_win.flip()
             event.waitKeys(keyList=['space'])

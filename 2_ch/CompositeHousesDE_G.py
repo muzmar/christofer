@@ -104,7 +104,7 @@ items, trial_order = read_stims('%s/stimuli/Trials_CompositeHouses.txt'%(PATH))
 wrap_width = SCREEN_SIZE[0]-100
 font = LANG_FONT_MAP[LANGUAGE]  # font based on language selection
 
-output_file = OUTPATH + exp_info['exp_name'] + '_' + LANGUAGE + '_%02i.txt'%(int(exp_info['Subject']))
+output_file = OUTPATH + exp_info['exp_name'] + '_' + "DE_G" + '_%02i.txt'%(int(exp_info['Subject']))
 rt_clock = core.Clock()  # reaction time clock
 
 # fixation cross
